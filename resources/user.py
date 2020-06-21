@@ -1,6 +1,9 @@
 from flask_restful import Resource,reqparse
+from werkzeug.security import safe_str_cmp
+from flask_jwt_extended import create_access_token,jwt_required
 from db import query
 class User(Resource):
+    @jwt_required
     def get(self):
         parser=reqparse.RequestParser()
         parser.add_argument('user_id',type=int,required=True,help="user_id cannot be left blank")
@@ -9,6 +12,7 @@ class User(Resource):
             return query(f"""select * from shruthi.User where user_id={data['user_id']};""")
         except:
             return {"message":"There was an error connecting to User table"}
+    @jwt_required
     def post(self):
         parser=reqparse.RequestParser()
         parser.add_argument('name',type=str,required=True,help="name cannot be left empty")
@@ -38,3 +42,34 @@ class User(Resource):
              return {"message":"Successfully Inserted."},201
         except:
             return {"message":"There was an error Inserting to User table"},500
+
+class User_ob():
+    def __init__(self,Rollno,name,password):
+        self.Rollno=Rollno
+        self.name=name
+        self.password=password
+
+    @classmethod
+    def getUserByRollno(cls,Rollno):
+        result=query(f"""select Rollno,name,password from shruthi.User where Rollno='{Rollno}'""",return_json=False)
+        if len(result)>0: return User_ob(result[0]['Rollno'],result[0]['name'],result[0]['password'])
+        return None
+
+    @classmethod
+    def getUserByname(cls,name):
+        result=query(f"""select Rollno,name,password from shruthi.User where name='{name}'""",return_json=False)
+        if len(result)>0: return User_ob(result[0]['Rollno'],result[0]['name'],result[0]['password'])
+        return None
+
+
+class UserLogin(Resource):
+    def post(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('name',type=str,required=True,help="name cannot be left empty")
+        parser.add_argument('password',type=str,required=True,help="password cannot be left empty")
+        data=parser.parse_args()
+        user=User_ob.getUserByname(data['name'])
+        if user and safe_str_cmp(user.password,data['password']):
+            access_token=create_access_token(identity=user.Rollno,expires_delta=False)
+            return{'access_token':access_token},200
+        return{"message":"Invalid Credentials"},401
