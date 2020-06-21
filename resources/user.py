@@ -3,7 +3,7 @@ from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import create_access_token,jwt_required
 from db import query
 class User(Resource):
-    @jwt_required
+    '''@jwt_required
     def get(self):
         parser=reqparse.RequestParser()
         parser.add_argument('user_id',type=int,required=True,help="user_id cannot be left blank")
@@ -11,7 +11,7 @@ class User(Resource):
         try:
             return query(f"""select * from shruthi.User where user_id={data['user_id']};""")
         except:
-            return {"message":"There was an error connecting to User table"}
+            return {"message":"There was an error connecting to User table"}'''
     @jwt_required
     def post(self):
         parser=reqparse.RequestParser()
@@ -39,7 +39,7 @@ class User(Resource):
                                         {data['year']},
                                         {data['mobile_no']},
                                         '{data['email_id']}')""")
-             return {"message":"Successfully Inserted."},201
+             return {"message":" User Successfully Registered."},201
         except:
             return {"message":"There was an error Inserting to User table"},500
 
@@ -65,11 +65,11 @@ class User_ob():
 class UserLogin(Resource):
     def post(self):
         parser=reqparse.RequestParser()
-        parser.add_argument('name',type=str,required=True,help="name cannot be left empty")
+        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left empty")
         parser.add_argument('password',type=str,required=True,help="password cannot be left empty")
         data=parser.parse_args()
-        user=User_ob.getUserByname(data['name'])
+        user=User_ob.getUserByRollno(data['Rollno'])
         if user and safe_str_cmp(user.password,data['password']):
             access_token=create_access_token(identity=user.Rollno,expires_delta=False)
-            return{'access_token':access_token},200
+            return {'access_token':access_token},200
         return{"message":"Invalid Credentials"},401

@@ -2,7 +2,7 @@ from flask import Flask,jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from resources.user import User,UserLogin
-from resources.event_head import Event_Head
+from resources.event_head import Event_Head,HeadLogin
 import pymysql
 app=Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS']=True
@@ -23,9 +23,10 @@ def invalid_token_callback(error):
         'message':'Signature verification failed.'
     }),401
 
-api.add_resource(User,'/user')
-api.add_resource(UserLogin,'/login')
-api.add_resource(Event_Head,'/event_head')
+api.add_resource(User,'/user_register')
+api.add_resource(UserLogin,'/user_login')
+api.add_resource(Event_Head,'/eventhead_reg')
+api.add_resource(HeadLogin,'/eventhead_login')
 
 if __name__=='__main__':
     app.run()
