@@ -12,7 +12,7 @@ class User(Resource):
             return query(f"""select * from shruthi.User where user_id={data['user_id']};""")
         except:
             return {"message":"There was an error connecting to User table"}'''
-    @jwt_required
+    
     def post(self):
         parser=reqparse.RequestParser()
         parser.add_argument('name',type=str,required=True,help="name cannot be left empty")
