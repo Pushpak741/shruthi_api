@@ -2,6 +2,7 @@ from flask_restful import Resource,reqparse
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import create_access_token,jwt_required
 from db import query
+import jsonify
 class User(Resource):
     '''@jwt_required
     def get(self):
@@ -12,7 +13,7 @@ class User(Resource):
             return query(f"""select * from shruthi.User where user_id={data['user_id']};""")
         except:
             return {"message":"There was an error connecting to User table"}'''
-    
+
     def post(self):
         parser=reqparse.RequestParser()
         parser.add_argument('name',type=str,required=True,help="name cannot be left empty")
@@ -71,5 +72,8 @@ class UserLogin(Resource):
         user=User_ob.getUserByRollno(data['Rollno'])
         if user and safe_str_cmp(user.password,data['password']):
             access_token=create_access_token(identity=user.Rollno,expires_delta=False)
-            return {'access_token':access_token},200
+            d=query(f"""select name,Rollno,branch,year from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
+            c=d[0]
+            c['access_token']=access_token
+            return d
         return{"message":"Invalid Credentials"},401
