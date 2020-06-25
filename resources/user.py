@@ -12,7 +12,7 @@ class Userd(Resource):
             d=query(f"""select name,Rollno,year,branch from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
             c=d[0]
             z= query(f"""select event_id,event_title from shruthi.Event where event_id=any(select event_id from shruthi.registrations where user_id=(select user_id from shruthi.User where Rollno={data['Rollno']}));""",return_json=False)
-            d.append(z)
+            d.extend(z)
             #c=dict(c.items()+z.items())
             return d
         except:
