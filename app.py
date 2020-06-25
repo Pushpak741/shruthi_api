@@ -1,8 +1,9 @@
 from flask import Flask,jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from resources.user import User,UserLogin,Events,Userd
+from resources.user import User,UserLogin,Events,Userd,User_ER
 from resources.event_head import Event_Head,HeadLogin
+from resources.admin import AdminLogin,Requests,ViewU
 import pymysql
 app=Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS']=True
@@ -29,6 +30,9 @@ api.add_resource(UserLogin,'/user_login')
 api.add_resource(Event_Head,'/eventhead_reg')
 api.add_resource(HeadLogin,'/eventhead_login')
 api.add_resource(Events,'/events')
-
+api.add_resource(User_ER,'/user_evtreg')
+api.add_resource(AdminLogin,'/admin_login')
+api.add_resource(Requests,'/requests')
+api.add_resource(ViewU,'/view_user')
 if __name__=='__main__':
     app.run()

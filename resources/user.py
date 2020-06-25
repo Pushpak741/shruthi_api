@@ -9,12 +9,10 @@ class Userd(Resource):
         parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
         data=parser.parse_args()
         try:
-            d=query(f"""select name,Rollno,year,branch from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
-            c=d[0]
+            d=query(f"""select  * from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
             z= query(f"""select event_id,event_title from shruthi.Event where event_id=any(select event_id from shruthi.registrations where user_id=(select user_id from shruthi.User where Rollno={data['Rollno']}));""",return_json=False)
             d.extend(z)
-            #c=dict(c.items()+z.items())
-            return d
+            return d,200
         except:
             return {"message":"There was an error connecting to databasse"},500
 class User(Resource):
@@ -82,3 +80,21 @@ class UserLogin(Resource):
 class Events(Resource):
     def get(self):
         return query(f"""select event_id,event_title,event_head_id,event_desc from shruthi.Event;""",return_json=False)
+class User_ER(Resource):
+    def post(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('user_id',type=int,required=True,help="user_id cannot be left empty")
+        parser.add_argument('event_id',type=int,required=True,help="event_id cannot be left empty")
+        data=parser.parse_args()
+        try:
+            x=query(f"""select * from shruthi.registrations where user_id={data['user_id']} and event_id={data['event_id']} """,return_json=False)
+            if len(x)>0: return{"message":"user has already registered this event."},400
+        except:
+            return{"message":"there was an error inserting into table."},500
+        try:
+             query(f"""insert into shruthi.registrations(user_id,event_id)
+                                values({data['user_id']},
+                                        {data['event_id']})""")
+             return {"message":" User Successfully Registered to event."},201
+        except:
+            return {"message":"There was an error while registration"},500
