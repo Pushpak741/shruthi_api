@@ -1,7 +1,7 @@
 from flask import Flask,jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from resources.user import User,UserLogin
+from resources.user import User,UserLogin,Events,Userd
 from resources.event_head import Event_Head,HeadLogin
 import pymysql
 app=Flask(__name__)
@@ -24,9 +24,11 @@ def invalid_token_callback(error):
     }),401
 
 api.add_resource(User,'/user_register')
+api.add_resource(Userd,'/user_details')
 api.add_resource(UserLogin,'/user_login')
 api.add_resource(Event_Head,'/eventhead_reg')
 api.add_resource(HeadLogin,'/eventhead_login')
+api.add_resource(Events,'/events')
 
 if __name__=='__main__':
     app.run()

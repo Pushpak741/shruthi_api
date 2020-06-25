@@ -2,17 +2,21 @@ from flask_restful import Resource,reqparse
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import create_access_token,jwt_required
 from db import query
-class User(Resource):
-    '''@jwt_required
+class Userd(Resource):
+    @jwt_required
     def get(self):
         parser=reqparse.RequestParser()
-        parser.add_argument('user_id',type=int,required=True,help="user_id cannot be left blank")
+        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
         data=parser.parse_args()
         try:
-            return query(f"""select * from shruthi.User where user_id={data['user_id']};""")
+            d=query(f"""select name,Rollno,year,branch from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
+            c=d[0]
+            '''z=query(f"""select  event_id,event_title from shruthi.Event where event_id=100;""",return_json=False)
+            c=dict(c.items()+z.items())'''
+            return d;
         except:
-            return {"message":"There was an error connecting to User table"}'''
-
+            return {"message":"There was an error connecting to databasse"}
+class User(Resource):
     def post(self):
         parser=reqparse.RequestParser()
         parser.add_argument('name',type=str,required=True,help="name cannot be left empty")
@@ -72,7 +76,8 @@ class UserLogin(Resource):
         if user and safe_str_cmp(user.password,data['password']):
             access_token=create_access_token(identity=user.Rollno,expires_delta=False)
             d=query(f"""select name,Rollno,branch,year from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
-            c=d[0]
-            c['access_token']=access_token
-            return d
+            return {'access_token':access_token},200
         return{"message":"Invalid Credentials"},401
+class Events(Resource):
+    def get(self):
+        return query(f"""select event_id,event_title,event_head_id,event_desc from shruthi.Event;""",return_json=False)

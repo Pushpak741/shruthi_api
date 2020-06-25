@@ -2,6 +2,7 @@ from flask_restful import Resource,reqparse
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import create_access_token,jwt_required
 from db import query
+
 class Event_Head(Resource):
     '''def get(self):
         parser=reqparse.RequestParser()
