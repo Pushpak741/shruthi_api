@@ -68,7 +68,9 @@ class AdminremH(Resource):
         parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
         data=parser.parse_args()
         try:
+                query(f"""delete from shruthi.Event where event_id=(select event_id from shruthi.Event_Head where Rollno={data['Rollno']});""",return_json=False)
                 query(f"""delete from shruthi.Event_Head where Rollno={data['Rollno']};""",return_json=False)
+
         except:
                 return {"message":"there is no event head with that Rollno to remove"},500
         return {"message":"event head removed from the database Successfully"},200

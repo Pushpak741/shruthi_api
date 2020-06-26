@@ -112,3 +112,34 @@ class User_ER(Resource):
              return {"message":" User Successfully Registered to event."},201
         except:
             return {"message":"There was an error while registration"},500
+class User_Interest(Resource):
+    def post(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('user_id',type=int,required=True,help="user_id cannot be left empty")
+        parser.add_argument('event_id',type=int,required=True,help="event_id cannot be left empty")
+        data=parser.parse_args()
+        try:
+            x=query(f"""select * from shruthi.events_interested where user_id={data['user_id']} and event_id={data['event_id']} """,return_json=False)
+            if len(x)>0: return{"message":"This event is already in fav list."},400
+        except:
+            return{"message":"there was an error inserting into table."},500
+        try:
+             query(f"""insert into shruthi.events_interested(user_id,event_id)
+                                values({data['user_id']},
+                                        {data['event_id']})""")
+             return {"message":" Event successfully added to fav list."},201
+        except:
+            return {"message":"There was an error while adding to fav list"},500
+class User_fav(Resource):
+    @jwt_required
+    def get(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
+        data=parser.parse_args()
+        try:
+
+            z= query(f"""select event_id,event_title from shruthi.Event where event_id=any(select event_id from shruthi.events_interested where user_id=(select user_id from shruthi.User where Rollno={data['Rollno']}));""",return_json=False)
+
+            return z,200
+        except:
+            return {"message":"There was an error connecting to databasse"},500

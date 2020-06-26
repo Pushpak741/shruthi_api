@@ -1,8 +1,8 @@
 from flask import Flask,jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from resources.user import User,UserLogin,Events,Userd,User_ER,UserE
-from resources.event_head import Event_Head,HeadLogin
+from resources.user import User,UserLogin,Events,Userd,User_ER,UserE,User_Interest,User_fav
+from resources.event_head import Event_Head,HeadLogin,HeadReq
 from resources.admin import AdminLogin,Requests,ViewU,Adminrem,AdminremH,AdminremR
 import pymysql
 app=Flask(__name__)
@@ -38,5 +38,8 @@ api.add_resource(UserE,'/user_event')
 api.add_resource(Adminrem,'/user_remove')
 api.add_resource(AdminremH,'/head_remove')
 api.add_resource(AdminremR,'/req_remove')
+api.add_resource(HeadReq,'/head_request')
+api.add_resource(User_Interest,'/user_addfav')
+api.add_resource(User_fav,'/user_fav')
 if __name__=='__main__':
     app.run()

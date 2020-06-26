@@ -72,3 +72,27 @@ class HeadLogin(Resource):
             access_token=create_access_token(identity=head.Rollno,expires_delta=False)
             return {'access_token':access_token},200
         return{"message":"Invalid Credentials"},401
+class HeadReq(Resource):
+        def post(self):
+            parser=reqparse.RequestParser()
+            parser.add_argument('event_head_name',type=str,required=True,help="name cannot be left empty")
+            parser.add_argument('event_head_year',type=int,required=True,help="year cannot be left empty")
+            parser.add_argument('event_desc',type=str,required=True,help="description cannot be left empty")
+            parser.add_argument('email_id',type=str,required=True,help="email_id cannot be left empty")
+            parser.add_argument('event_title',type=str,required=True,help="event_title cannot be left empty")
+            data=parser.parse_args()
+            try:
+                x=query(f"""select * from shruthi.Requests where event_title='{data['event_title']}'""",return_json=False)
+                if len(x)>0: return{"message":"event with that title already exists."},400
+            except:
+                return{"message":"there was an error inserting into table."},500
+            try:
+                 query(f"""insert into shruthi.Requests(event_head_name,event_head_year,event_desc,email_id,event_title)
+                                    values('{data['event_head_name']}',
+                                            {data['event_head_year']},
+                                            '{data['event_desc']}',
+                                            '{data['email_id']}',
+                                            '{data['event_title']}')""")
+                 return {"message":" Request send successfully"},201
+            except:
+                return {"message":"There was an error Inserting to  databasse"},500
