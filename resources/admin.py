@@ -72,3 +72,14 @@ class AdminremH(Resource):
         except:
                 return {"message":"there is no event head with that Rollno to remove"},500
         return {"message":"event head removed from the database Successfully"},200
+class AdminremR(Resource):
+    @jwt_required
+    def delete(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('req_id',type=int,required=True,help="req_id cannot be left blank")
+        data=parser.parse_args()
+        try:
+                query(f"""delete from shruthi.Requests where req_id={data['req_id']};""",return_json=False)
+        except:
+                return {"message":"there is no request with that req_id to remove"},500
+        return {"message":"request removed from the database Successfully"},200
