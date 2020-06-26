@@ -10,9 +10,23 @@ class Userd(Resource):
         data=parser.parse_args()
         try:
             d=query(f"""select  * from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
-            z= query(f"""select event_id,event_title from shruthi.Event where event_id=any(select event_id from shruthi.registrations where user_id=(select user_id from shruthi.User where Rollno={data['Rollno']}));""",return_json=False)
-            d.extend(z)
+            #z= query(f"""select event_id,event_title from shruthi.Event where event_id=any(select event_id from shruthi.registrations where user_id=(select user_id from shruthi.User where Rollno={data['Rollno']}));""",return_json=False)
+            #d.extend(z)
             return d,200
+        except:
+            return {"message":"There was an error connecting to databasse"},500
+
+class UserE(Resource):
+    @jwt_required
+    def get(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
+        data=parser.parse_args()
+        try:
+
+            z= query(f"""select event_id,event_title from shruthi.Event where event_id=any(select event_id from shruthi.registrations where user_id=(select user_id from shruthi.User where Rollno={data['Rollno']}));""",return_json=False)
+
+            return z,200
         except:
             return {"message":"There was an error connecting to databasse"},500
 class User(Resource):

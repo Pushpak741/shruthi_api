@@ -50,3 +50,25 @@ class ViewU(Resource):
             return d,200
         except:
             return {"message":"There was an error connecting to databasse"},500
+class Adminrem(Resource):
+    @jwt_required
+    def delete(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
+        data=parser.parse_args()
+        try:
+                query(f"""delete from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
+        except:
+                return {"message":"there is no user with that Rollno to remove"},500
+        return {"message":"user removed from the database Successfully"},200
+class AdminremH(Resource):
+    @jwt_required
+    def delete(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
+        data=parser.parse_args()
+        try:
+                query(f"""delete from shruthi.Event_Head where Rollno={data['Rollno']};""",return_json=False)
+        except:
+                return {"message":"there is no event head with that Rollno to remove"},500
+        return {"message":"event head removed from the database Successfully"},200
