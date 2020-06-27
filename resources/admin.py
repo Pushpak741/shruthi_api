@@ -88,6 +88,7 @@ class AdminremR(Resource):
                 return {"message":"there is no request with that req_id to remove"},500
         return {"message":"request removed from the database Successfully"},200
 class AdminCon(Resource):
+    @jwt_required
     def post(self):
         parser=reqparse.RequestParser()
         parser.add_argument('req_id',type=int,required=True,help="req_id cannot be left blank!")
