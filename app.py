@@ -3,7 +3,7 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from resources.user import User,UserLogin,Events,Userd,User_ER,UserE,User_Interest,User_fav
 from resources.event_head import Event_Head,HeadLogin,HeadReq
-from resources.admin import AdminLogin,Requests,ViewU,Adminrem,AdminremH,AdminremR
+from resources.admin import AdminLogin,Requests,ViewU,Adminrem,AdminremH,AdminremR,AdminCon
 import pymysql
 app=Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS']=True
@@ -41,5 +41,6 @@ api.add_resource(AdminremR,'/req_remove')
 api.add_resource(HeadReq,'/head_request')
 api.add_resource(User_Interest,'/user_addfav')
 api.add_resource(User_fav,'/user_fav')
+api.add_resource(AdminCon,'/confirmation')
 if __name__=='__main__':
     app.run()

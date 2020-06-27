@@ -2,6 +2,8 @@ from flask_restful import Resource,reqparse
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import create_access_token,jwt_required
 from db import query
+import smtplib
+from email.message import EmailMessage
 class admin_ob():
     def __init__(self,admin_id,admin_name,password):
         self.admin_id=admin_id
@@ -85,3 +87,26 @@ class AdminremR(Resource):
         except:
                 return {"message":"there is no request with that req_id to remove"},500
         return {"message":"request removed from the database Successfully"},200
+class AdminCon(Resource):
+    def post(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('req_id',type=int,required=True,help="req_id cannot be left blank!")
+        data=parser.parse_args()
+        try:
+            z=query(f"""select * from shruthi.Requests where req_id = {data['req_id']}""",return_json=False)
+            if(len(z)>0):
+                x=query(f""" select email_id from shruthi.Requests where req_id = {data['req_id']}""",return_json=False)
+                s = smtplib.SMTP("smtp.gmail.com", 587)
+                s.ehlo()
+                s.starttls()
+                s.ehlo()
+                s.login('shruthicbit11@gmail.com', 'admin@shruthi')
+                message = "Your request has been confirmed by admin now go fill the registration form"
+                s.sendmail("shruthicbit11@gmail.com",x[0]['email_id'],message)
+                s.quit()
+                return {"message":"Succesfully sent to event head mail!"},201
+            else:
+                return {"message" : "No eventhead is present with the given req_id"},400
+
+        except:
+            return {"message":"Unable to send mail"},500
