@@ -143,3 +143,36 @@ class User_fav(Resource):
             return z,200
         except:
             return {"message":"There was an error connecting to databasse"},500
+
+
+class User_ob2():
+    def __init__(self,Rollno,name,password):
+        self.Rollno=Rollno
+        self.name=name
+        self.password=password
+
+    @classmethod
+    def getUserByRollno(cls,Rollno):
+        result=query(f"""select Rollno,name,password from shruthi.User where Rollno='{Rollno}'""",return_json=False)
+        if len(result)>0: return User_ob(result[0]['Rollno'],result[0]['name'],result[0]['password'])
+        return None
+
+    @classmethod
+    def getUserByname(cls,name):
+        result=query(f"""select Rollno,name,password from shruthi.User where name='{name}'""",return_json=False)
+        if len(result)>0: return User_ob(result[0]['Rollno'],result[0]['name'],result[0]['password'])
+        return None
+
+
+class UserLogin2(Resource):
+    def post(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left empty")
+        #parser.add_argument('name',type=str,required=True,help="name cannot be left empty")
+        data=parser.parse_args()
+        user=User_ob2.getUserByRollno(data['Rollno'])
+        if user: #and safe_str_cmp(user.name,data['name']):
+            access_token=create_access_token(identity=user.Rollno,expires_delta=False)
+             #d=query(f"""select name,Rollno,branch,year from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
+            return {'access_token':access_token},200
+        return{"message":"Invalid Credentials"},401
