@@ -54,7 +54,7 @@ class ViewU(Resource):
             return {"message":"There was an error connecting to databasse"},500
 class Adminrem(Resource):
     @jwt_required
-    def delete(self):
+    def post(self):
         parser=reqparse.RequestParser()
         parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
         data=parser.parse_args()
