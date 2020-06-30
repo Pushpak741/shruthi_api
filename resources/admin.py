@@ -67,14 +67,14 @@ class AdminremH(Resource):
     @jwt_required
     def post(self):
         parser=reqparse.RequestParser()
-        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
+        parser.add_argument('event_head_id',type=int,required=True,help="Event head id cannot be left blank")
         data=parser.parse_args()
         try:
-                query(f"""delete from shruthi.Event where event_id=(select event_id from shruthi.Event_Head where Rollno={data['Rollno']});""",return_json=False)
-                query(f"""delete from shruthi.Event_Head where Rollno={data['Rollno']};""",return_json=False)
+                query(f"""delete from shruthi.Event where event_id=(select event_id from shruthi.Event_Head where event_head_id={data['event_head_id']});""",return_json=False)
+                query(f"""delete from shruthi.Event_Head where event_head_id={data['event_head_id']};""",return_json=False)
 
         except:
-                return {"message":"there is no event head with that Rollno to remove"},500
+                return {"message":"there is no event head with that id to remove"},500
         return {"message":"event head removed from the database Successfully"},200
 class AdminremR(Resource):
     @jwt_required
@@ -94,9 +94,17 @@ class AdminCon(Resource):
         parser.add_argument('req_id',type=int,required=True,help="req_id cannot be left blank!")
         data=parser.parse_args()
         try:
+            y=query(f"""insert into shruthi.Event_Head(name) select event_head_name from shruthi.Requests where  req_id = {data['req_id']}""",return_json=False)
+            k=query(f"""insert into shruthi.Event(event_title) select event_title from shruthi.Requests where  req_id = {data['req_id']}""",return_json=False)
+            v=query(f"""update shruthi.Event set event_head_id = (select event_head_id from shruthi.Event_Head where name=( select event_head_name from shruthi.Requests where req_id = {data['req_id']})) where event_title=(select event_title from shruthi.Requests where req_id = {data['req_id']}) """,return_json=False)
+            p=query(f"""update shruthi.Event set event_desc = (select event_desc from shruthi.Requests where  req_id = {data['req_id']}) where event_title=(select event_title from shruthi.Requests where req_id = {data['req_id']}) """,return_json=False)
+            q=query(f"""update shruthi.Event_Head set email_id=(select email_id from shruthi.Requests where  req_id =  {data['req_id']}) where name =(select event_head_name from shruthi.Requests where  req_id =  {data['req_id']})""",return_json=False)
+            r=query(f"""update shruthi.Event_Head set year=(select event_head_year from shruthi.Requests where  req_id =  {data['req_id']}) where name =(select event_head_name from shruthi.Requests where  req_id = {data['req_id']} )""",return_json=False)
+            w=query(f"""update shruthi.Event_Head set event_id=(select event_id from shruthi.Event where event_title=(select event_title from shruthi.Requests where  req_id = {data['req_id']})) where name =(select event_head_name from shruthi.Requests where  req_id = {data['req_id']})""",return_json=False)
             z=query(f"""select * from shruthi.Requests where req_id = {data['req_id']}""",return_json=False)
             if(len(z)>0):
                 x=query(f""" select email_id from shruthi.Requests where req_id = {data['req_id']}""",return_json=False)
+                m=query(f""" delete from shruthi.Requests where req_id = {data['req_id']}""",return_json=False)
                 s = smtplib.SMTP("smtp.gmail.com", 587)
                 s.ehlo()
                 s.starttls()
@@ -105,9 +113,9 @@ class AdminCon(Resource):
                 message = "Your request has been confirmed by admin now go fill the registration form"
                 s.sendmail("shruthicbit11@gmail.com",x[0]['email_id'],message)
                 s.quit()
+
                 return {"message":"Succesfully sent to event head mail!"},201
             else:
                 return {"message" : "No eventhead is present with the given req_id"},400
-
         except:
             return {"message":"Unable to send mail"},500
