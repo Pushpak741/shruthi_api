@@ -80,6 +80,7 @@ class HeadReq(Resource):
             parser.add_argument('event_desc',type=str,required=True,help="description cannot be left empty")
             parser.add_argument('email_id',type=str,required=True,help="email_id cannot be left empty")
             parser.add_argument('event_title',type=str,required=True,help="event_title cannot be left empty")
+            parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left empty")
             data=parser.parse_args()
             try:
                 x=query(f"""select * from shruthi.Requests where event_title='{data['event_title']}'""",return_json=False)
@@ -87,12 +88,13 @@ class HeadReq(Resource):
             except:
                 return{"message":"there was an error inserting into table."},500
             try:
-                 query(f"""insert into shruthi.Requests(event_head_name,event_head_year,event_desc,email_id,event_title)
+                 query(f"""insert into shruthi.Requests(event_head_name,event_head_year,event_desc,email_id,event_title,Rollno)
                                     values('{data['event_head_name']}',
                                             {data['event_head_year']},
                                             '{data['event_desc']}',
                                             '{data['email_id']}',
-                                            '{data['event_title']}')""")
+                                            '{data['event_title']}',
+                                            {data['Rollno']})""")
                  return {"message":" Request send successfully"},201
             except:
                 return {"message":"There was an error Inserting to  databasse"},500

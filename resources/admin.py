@@ -101,6 +101,7 @@ class AdminCon(Resource):
             q=query(f"""update shruthi.Event_Head set email_id=(select email_id from shruthi.Requests where  req_id =  {data['req_id']}) where name =(select event_head_name from shruthi.Requests where  req_id =  {data['req_id']})""",return_json=False)
             r=query(f"""update shruthi.Event_Head set year=(select event_head_year from shruthi.Requests where  req_id =  {data['req_id']}) where name =(select event_head_name from shruthi.Requests where  req_id = {data['req_id']} )""",return_json=False)
             w=query(f"""update shruthi.Event_Head set event_id=(select event_id from shruthi.Event where event_title=(select event_title from shruthi.Requests where  req_id = {data['req_id']})) where name =(select event_head_name from shruthi.Requests where  req_id = {data['req_id']})""",return_json=False)
+            t=query(f"""update shruthi.Event_Head set Rollno=(select Rollno from shruthi.Requests where  req_id =  {data['req_id']}) where name =(select event_head_name from shruthi.Requests where  req_id = {data['req_id']} )""",return_json=False)
             z=query(f"""select * from shruthi.Requests where req_id = {data['req_id']}""",return_json=False)
             if(len(z)>0):
                 x=query(f""" select email_id from shruthi.Requests where req_id = {data['req_id']}""",return_json=False)
