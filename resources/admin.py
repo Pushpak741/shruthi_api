@@ -119,7 +119,7 @@ class AdminCon(Resource):
                 s.starttls()
                 s.ehlo()
                 s.login('shruthicbit11@gmail.com', 'admin@shruthi')
-                message = "Your request has been confirmed by admin now go fill the registration form"
+                message = "Your request has been confirmed by admin and the event is successfully added in shruthi events"
                 s.sendmail("shruthicbit11@gmail.com",x[0]['email_id'],message)
                 s.quit()
 
