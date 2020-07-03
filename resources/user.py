@@ -176,3 +176,35 @@ class UserLogin2(Resource):
              #d=query(f"""select name,Rollno,branch,year from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
             return {'access_token':access_token},200
         return{"message":"Invalid Credentials"},401
+
+class User_ob3():
+    def __init__(self,user_id,name,password):
+        self.user_id=user_id
+        self.name=name
+        self.password=password
+
+    @classmethod
+    def getUserByUserid(cls,user_id):
+        result=query(f"""select user_id,name,password from shruthi.User where user_id='{user_id}'""",return_json=False)
+        if len(result)>0: return User_ob3(result[0]['user_id'],result[0]['name'],result[0]['password'])
+        return None
+
+    @classmethod
+    def getUserByname(cls,name):
+        result=query(f"""select user_id,name,password from shruthi.User where name='{name}'""",return_json=False)
+        if len(result)>0: return User_ob3(result[0]['user_id'],result[0]['name'],result[0]['password'])
+        return None
+
+
+class UserLogin3(Resource):
+    def post(self):
+        parser=reqparse.RequestParser()
+        parser.add_argument('user_id',type=int,required=True,help="user_id cannot be left empty")
+        #parser.add_argument('name',type=str,required=True,help="name cannot be left empty")
+        data=parser.parse_args()
+        user=User_ob3.getUserByUserid(data['user_id'])
+        if user: #and safe_str_cmp(user.name,data['name']):
+            access_token=create_access_token(identity=user.user_id,expires_delta=False)
+             #d=query(f"""select name,Rollno,branch,year from shruthi.User where Rollno={data['Rollno']};""",return_json=False)
+            return {'access_token':access_token},200
+        return{"message":"Invalid Credentials"},401
