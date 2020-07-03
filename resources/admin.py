@@ -52,6 +52,14 @@ class ViewU(Resource):
             return d,200
         except:
             return {"message":"There was an error connecting to databasse"},500
+class ViewHead(Resource):
+    @jwt_required
+    def get(self):
+        try:
+            d=query(f"""select event_head_id,name,Rollno,year,email_id,event_id from shruthi.Event_Head ;""",return_json=False)
+            return d,200
+        except:
+            return {"message":"There was an error connecting to databasse"},500
 class Adminrem(Resource):
     @jwt_required
     def post(self):

@@ -72,6 +72,18 @@ class HeadLogin(Resource):
             access_token=create_access_token(identity=head.Rollno,expires_delta=False)
             return {'access_token':access_token},200
         return{"message":"Invalid Credentials"},401
+class Changepwd(Resource):
+    @jwt_required
+    def post(self):
+            parser=reqparse.RequestParser()
+            parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left empty")
+            parser.add_argument('password',type=str,required=True,help="password cannot be left empty")
+            data=parser.parse_args()
+            try:
+                query(f"""update shruthi.Event_Head set password='{data['password']}' where Rollno={data['Rollno']}""",return_json=False)
+                return{"message":"password updated successfully"},200
+            except:
+                return{"message":"unable to update password"},500
 class HeadReq(Resource):
         def post(self):
             parser=reqparse.RequestParser()

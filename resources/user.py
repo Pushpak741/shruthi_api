@@ -134,11 +134,11 @@ class User_fav(Resource):
     @jwt_required
     def get(self):
         parser=reqparse.RequestParser()
-        parser.add_argument('Rollno',type=int,required=True,help="Rollno cannot be left blank")
+        parser.add_argument('user_id',type=int,required=True,help="user_id cannot be left blank")
         data=parser.parse_args()
         try:
 
-            z= query(f"""select event_id,event_title from shruthi.Event where event_id=any(select event_id from shruthi.events_interested where user_id=(select user_id from shruthi.User where Rollno={data['Rollno']}));""",return_json=False)
+            z= query(f"""select event_id,event_title from shruthi.Event where event_id=any(select event_id from shruthi.events_interested where user_id={data['user_id']});""",return_json=False)
 
             return z,200
         except:
